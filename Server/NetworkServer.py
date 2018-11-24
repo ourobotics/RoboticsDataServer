@@ -90,7 +90,7 @@ class NetworkServer(object):
 				try:
 					print("Listening")
 					conn, addr = self.listener.accept()
-					print(conn, addr)
+					print("Connection Created:","Address:",addr[0],"Port:",addr[1])
 					self.connectionStatus = True
 					self.connectionController.connectionCycle(conn, addr)
 					self.connectionStatus = False

@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/usr/bin/python3",
+    "python.pythonPath": "C:\\Users\\Logan\\AppData\\Local\\Programs\\Python\\Python37-32\\python.exe",
     // "python.linting.wrong-import-position": false,
     "python.linting.pylintEnabled": false
 }
