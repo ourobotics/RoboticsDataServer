@@ -8,14 +8,12 @@
 # ||  Email:            LWilkovich@gmail.com
 # ||  Creation Date:	21 November 2018 | Logan Wilkovich
 # |===============================================================|
+# |===============================================================|
 # ||=======================||
 # Routes
 # Controllers
-
 # Tools
-
 # Test
-
 # Premades
 from time import time
 import traceback
@@ -26,16 +24,16 @@ import traceback
 # Notes
 
 # ||=======================||
-# |============================================================================|
+# |===============================================================|
 
-class DeviceData:
-
-    jsonData = 50
+class ClientData:
 
     @classmethod
-    def getDeviceData(cls):
+    def getClientData(cls, type):
         return cls.jsonData
 
     @classmethod
-    def setDeviceData(cls, data):
+    def setClientData(cls, type, data):
         cls.jsonData = data
+        
+# |===============================================================|
