@@ -1,10 +1,27 @@
 <!doctype html>
 <html>
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='prism.png') }}");
+            font-family: "Roboto", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;    
+        }
+        .BJson {
+            margin: 15px 0 0;
+            color: #ffffff;
+            font-size: 12px;
+        }
+    </style>
     <head>
         <title>Robot Data Server API - Json Viewer</title>
     </head>
 
     <body>
-        <pre style="word-wrap: break-word; white-space: pre-wrap;">{{name|safe}}</pre>
+        <pre id="JsonViewer" class="BJson" style="word-wrap: break-word; white-space: pre-wrap;">{{name|safe}}</pre>
     </body>
+    <script>
+        var ApiType = '{{ variable }}';
+    </script>
+    <script src="{{ url_for('static', filename='JsonViewer.js') }}"></script>
 </html>

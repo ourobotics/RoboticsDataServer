@@ -64,19 +64,21 @@ class RoboticsDataServer(object):
 			while True:
 				# continue
 				sleep(1)
-				data = DeviceData.getLiveDeviceData()
+				# data = DeviceData.getLiveDeviceData()
 				
-				data["NetworkServer"] = self.networkServer.jsonify(
+				networkServerData = self.networkServer.jsonify(
 					"Requesting Current Cache", 
 					str(strftime("%Y-%m-%d %H:%M:%S", localtime())))
-				data["ConnectionController"] = self.networkServer.connectionController.jsonify(
+				connectionControllerData = self.networkServer.connectionController.jsonify(
 					"Requesting Current Cache", 
 					str(strftime("%Y-%m-%d %H:%M:%S", localtime())))
 
-				DeviceData.setLiveDeviceData(data)
+				DeviceData.NetworkServer.setLiveData(networkServerData)
+				DeviceData.ConnectionController.setLiveData(connectionControllerData)
+				# DeviceData.setLiveDeviceData(data)
 
 		except KeyboardInterrupt as e:
-			print(str(traceback.format_exc()))
+			# print(str(traceback.format_exc()))
 			return
 
 rds = RoboticsDataServer()

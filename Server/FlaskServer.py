@@ -20,11 +20,13 @@ from ApiService import ApiService
 # Data
 from DeviceData import DeviceData
 # Premades
-from flask import Flask, request, Response
+from flask import Flask, request, Response, redirect, url_for
 import flask
 from flask_restful import Resource
 from json import dumps, loads
 from flask_jsonpify import jsonify
+from flask_login import LoginManager, login_user, login_required, user_logged_in
+# import flask_login
 # ||=======================||
 # Global Variables
 # ||=======================||
@@ -32,59 +34,106 @@ from flask_jsonpify import jsonify
 # ||=======================||
 # ||===============================================================||
 
-app = Flask(__name__, template_folder='../templates')
+UserList = {}
+
+class User(object):
+	def __init__(self, id, username, active=True):
+		self.username = username
+		self.id = id
+		self.active = active
+		#self.active = active
+	def is_authenticated(self):
+		return True
+
+	def is_active(self):
+		return self.active
+
+	def is_anonymous(self):
+		return False
+
+	def get_id(self):
+		return self.id
+
+app = Flask(__name__, template_folder='../Templates', static_folder='../Static')
+app.secret_key = b'_5#y2L"F4Qa8z\n\xec]/'
+
+login_manager = LoginManager()
+
+@login_manager.user_loader
+def load_user(user_id):
+	print(user_id)
+	try:
+		return UserList[user_id]
+	except:
+		return None
+
+@app.route("/energycontroller")
+@login_required
+def energycontroller():
+	return flask.render_template("json.html", variable="energycontroller")
+
+@app.route("/thermocontroller")
+@login_required
+def thermocontroller():
+	return flask.render_template("json.html", variable="thermocontroller")
+
+@app.route("/gpscontroller")
+@login_required
+def gpscontroller():
+	return flask.render_template("json.html", variable="gpscontroller")
 
 @app.route("/networkserver")
+@login_required
 def networkserver():
-	# # firstName = request.args.get('first_name')
-	Data = str(DeviceData.getLiveDeviceData()["NetworkServer"])
-	Data = Data.replace("'", '"')
-	Data = Data.replace("True", "true")
-	Data = Data.replace("False", "false")
-	
-	jsonObj = loads(Data)
-	# ||=======================||
-	resp = Response(jsonObj)
-	resp.headers['Access-Control-Allow-Origin'] = '*'
-	resp = dumps(jsonObj, indent = 4)
-	return flask.render_template("json.html", name=resp)
+	return flask.render_template("json.html", variable="networkserver")
+
+@app.route("/nsl")
+@login_required
+def nsl():
+	return flask.render_template("json.html", variable="nsl")
 
 @app.route("/connectioncontroller")
+@login_required
 def connectioncontroller():
-	Data = str(DeviceData.getLiveDeviceData()["ConnectionController"])
-	Data = Data.replace("'", '"')
-	Data = Data.replace("True", "true")
-	Data = Data.replace("False", "false")
-
-	jsonObj = loads(Data)
-	# ||=======================||
-	resp = Response(jsonObj)
-	resp.headers['Access-Control-Allow-Origin'] = '*'
-	resp = dumps(jsonObj, indent = 4)
-	return flask.render_template("json.html", name=resp)
+	return flask.render_template("json.html", variable="connectioncontroller")
 
 @app.route("/ccil")
+@login_required
 def ccil():
-	index = request.args.get('index')
-	rawData = DeviceData.getInteractionLog(index)
-	Data = str(rawData)
-	Data = Data.replace("'", '"')
-	Data = Data.replace("True", "true")
-	Data = Data.replace("False", "false")
-	obj = '{'
-	if (index == None):
-		obj += '"Size":' + str(len(rawData)) + ','
-	else:
-		obj += '"Index":' + str(index) + ','
-	obj += '"InteractionLogs":' + Data
-	obj += '}'
+	return flask.render_template("json.html", variable="ccil")
 
-	jsonObj = loads(obj)
-	# ||=======================||
-	resp = Response(jsonObj)
-	resp.headers['Access-Control-Allow-Origin'] = '*'
-	resp = dumps(jsonObj, indent = 4)
-	return flask.render_template("json.html", name=resp)
+@app.route("/ccl")
+@login_required
+def ccl():
+	return flask.render_template("json.html", variable="ccl")
+
+@app.route("/")
+@app.route("/index")
+@login_required
+def index():
+	return flask.render_template("index.html")
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+	if (request.method == "POST"):
+		if ((request.form['username'] != 'admin') or (request.form['password'] != 'admin')):
+			username = request.form['username']
+			password = request.form['password']
+			print(username, password)
+			error = 'Invalid Credentials. Please try again.'
+		else:
+			username = request.form['username']
+			password = request.form['password']
+			print(username, password)
+			user = User(hash(username), username)
+			UserList[hash(username)] = user
+			login_user(user)
+
+			flask.flash('Logged in successfully.')
+
+			print("Success")
+			return redirect(url_for('index'))
+	return flask.render_template("login.html")
 
 class FlaskServer(object):
 	def __init__(self, useApiService = False):
@@ -116,6 +165,8 @@ class FlaskServer(object):
 		if (self.useApiService == True):
 			apiService = ApiService(app)
 
+		login_manager.init_app(app)
+		login_manager.login_view = 'login'
 
 		app.run(host=self.address,port=self.port, use_evalex=self.log)
 		
