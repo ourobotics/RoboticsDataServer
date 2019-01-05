@@ -8,9 +8,9 @@ async function updateJsonViewer() {
         Http.open("GET", url);
         Http.send();
         Http.onreadystatechange=(e)=>{
-            console.log(Http.responseText)
+            // console.log(Http.responseText)
             var newJson = (Http.responseText).replace(/\\/g,"")
-            console.log(newJson)
+            // console.log(newJson)
             document.getElementById("JsonViewer").innerHTML = newJson;
         }
         // console.log(ApiType)

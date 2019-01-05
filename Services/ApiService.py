@@ -40,6 +40,11 @@ class EnergyControllerAPI(Resource):
 	def get(self):
 		dumpTag = request.args.get('dump')
 		Data = str(EngineData.EnergyController.getLiveData())
+		if (Data == "None"):
+			resp = "No Information Found"
+			resp = Response(resp)
+			resp.headers['Access-Control-Allow-Origin'] = '*'
+			return resp
 		Data = Data.replace("'", '"')
 		Data = Data.replace("True", "true")
 		Data = Data.replace("False", "false")
@@ -51,10 +56,12 @@ class EnergyControllerAPI(Resource):
 			jsonObj = loads(Data)
 			resp = dumps(jsonObj, indent = 4)
 			resp = resp.replace("\n", "<br>").replace("\\","")
+			resp = Response(resp)
+			resp.headers['Access-Control-Allow-Origin'] = '*'
 		return resp
 
 class ThermoControllerAPI(Resource):
-	@login_required
+	# @login_required
 	def get(self):
 		dumpTag = request.args.get('dump')
 		Data = str(EngineData.ThermoController.getLiveData())
@@ -69,6 +76,8 @@ class ThermoControllerAPI(Resource):
 			jsonObj = loads(Data)
 			resp = dumps(jsonObj, indent = 4)
 			resp = resp.replace("\n", "<br>").replace("\\","")
+			resp = Response(resp)
+			resp.headers['Access-Control-Allow-Origin'] = '*'
 		return resp
 
 class GpsControllerAPI(Resource):
@@ -87,10 +96,12 @@ class GpsControllerAPI(Resource):
 			jsonObj = loads(Data)
 			resp = dumps(jsonObj, indent = 4)
 			resp = resp.replace("\n", "<br>").replace("\\","")
+			resp = Response(resp)
+			resp.headers['Access-Control-Allow-Origin'] = '*'
 		return resp
 
 class NetworkServerAPI(Resource):
-	@login_required
+	# @login_required
 	def get(self):
 		dumpTag = request.args.get('dump')
 		Data = str(DeviceData.NetworkServer.getLiveData())
@@ -105,6 +116,8 @@ class NetworkServerAPI(Resource):
 			jsonObj = loads(Data)
 			resp = dumps(jsonObj, indent = 4)
 			resp = resp.replace("\n", "<br>").replace("\\","")
+			resp = Response(resp)
+			resp.headers['Access-Control-Allow-Origin'] = '*'
 		return resp
 
 class NetworkServerInternalLogAPI(Resource):
@@ -134,6 +147,8 @@ class NetworkServerInternalLogAPI(Resource):
 			jsonObj = loads(obj)
 			resp = dumps(jsonObj, indent = 4)
 			resp = resp.replace("\n", "<br>").replace("\\","")
+			resp = Response(resp)
+			resp.headers['Access-Control-Allow-Origin'] = '*'
 		return resp
 
 class ConnectionControllerAPI(Resource):
@@ -152,6 +167,8 @@ class ConnectionControllerAPI(Resource):
 			jsonObj = loads(Data)
 			resp = dumps(jsonObj, indent = 4)
 			resp = resp.replace("\n", "<br>").replace("\\","")
+			resp = Response(resp)
+			resp.headers['Access-Control-Allow-Origin'] = '*'
 		return resp
 
 class ConnectionControllerInteractionLogAPI(Resource):
@@ -181,6 +198,8 @@ class ConnectionControllerInteractionLogAPI(Resource):
 			jsonObj = loads(obj)
 			resp = dumps(jsonObj, indent = 4)
 			resp = resp.replace("\n", "<br>").replace("\\","")
+			resp = Response(resp)
+			resp.headers['Access-Control-Allow-Origin'] = '*'
 		return resp
 
 class ConnectionControllerInternalLogAPI(Resource):
@@ -209,6 +228,8 @@ class ConnectionControllerInternalLogAPI(Resource):
 			jsonObj = loads(obj)
 			resp = dumps(jsonObj, indent = 4)
 			resp = resp.replace("\n", "<br>").replace("\\","")
+			resp = Response(resp)
+			resp.headers['Access-Control-Allow-Origin'] = '*'
 		return resp
 
 class ApiService(object):

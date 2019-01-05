@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+
+    <style>
+		body {
+			font-family: "Roboto", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+			margin: 0;
+			overflow:hidden;  
+        }
+        #background {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			height: 100%;
+		}
+		#canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			top: 0px;
+			left: 0px;
+		}
+		#container {
+			position: relative;
+		}
+		#container canvas, #overlay {
+			position: absolute;
+		}
+	</style>
+	
+    <head>
+        <title>Robot Data Server API</title>
+    </head>
+
+    <body>
+		<div id="container">
+			<canvas id="background"></canvas>
+			<div id="overlay" style="width:50%;"><canvas id="canvas"></canvas></div>
+		</div>
+	</body>
+
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script src="../Static/HexagonAsset.js"></script>
+    <!-- <script src="{{ url_for('static', filename='test.js') }}"></script> -->
+	<!-- <script src="{{ url_for('static', filename='utils.js') }}"></script> -->
+	<script src="../Static/utils.js"></script>
+	<!-- <script src="{{ url_for('static', filename='Chart.js') }}"></script> -->
+	<script src="../Static/Chart.js"></script>
+	<!-- <script src="{{ url_for('static', filename='LineChartScript.js') }}"></script> -->
+	<script src="../Static/LineChartScript.js"></script>
+	
+</html>

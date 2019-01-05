@@ -25,7 +25,7 @@ import flask
 from flask_restful import Resource
 from json import dumps, loads
 from flask_jsonpify import jsonify
-from flask_login import LoginManager, login_user, login_required, user_logged_in
+from flask_login import LoginManager, login_user, login_required, user_logged_in, current_user
 # import flask_login
 # ||=======================||
 # Global Variables
@@ -61,7 +61,7 @@ login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user(user_id):
-	print(user_id)
+	# print(user_id)
 	try:
 		return UserList[user_id]
 	except:
@@ -107,6 +107,11 @@ def ccil():
 def ccl():
 	return flask.render_template("json.html", variable="ccl")
 
+@app.route("/test")
+@login_required
+def test():
+	return flask.render_template("test.html")
+
 @app.route("/")
 @app.route("/index")
 @login_required
@@ -115,23 +120,26 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+	if (current_user.is_authenticated):
+		return redirect(url_for('index'))
+
 	if (request.method == "POST"):
 		if ((request.form['username'] != 'admin') or (request.form['password'] != 'admin')):
 			username = request.form['username']
 			password = request.form['password']
-			print(username, password)
+			# print(username, password)
 			error = 'Invalid Credentials. Please try again.'
 		else:
 			username = request.form['username']
 			password = request.form['password']
-			print(username, password)
+			# print(username, password)
 			user = User(hash(username), username)
 			UserList[hash(username)] = user
 			login_user(user)
 
 			flask.flash('Logged in successfully.')
 
-			print("Success")
+			# print("Success")
 			return redirect(url_for('index'))
 	return flask.render_template("login.html")
 
@@ -139,7 +147,7 @@ class FlaskServer(object):
 	def __init__(self, useApiService = False):
 		self.type = "FlaskServer"
 		self.active = True
-		app.debug = False
+		app.debug = True
 		self.address = "192.168.0.6"
 		self.port = '5002'
 		self.log = False
