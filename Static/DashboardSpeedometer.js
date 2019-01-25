@@ -7,12 +7,18 @@ class Speedometer {
 
         this.context = this.canvas.getContext('2d');
         this.currentPercent = 0;
-        this.textPercent = 0;
+        this.textPercent = "0";
+
+        this.currentSpeed = 0;
+        this.textSpeed = "0";
 
         this.arcThreePos = 90;
         this.arcThreeIncrement = this.currentPercent * 10
 
         this.arcFourPos = 0;
+
+        this.fontBase = this.canvas.width;                   // selected default width for canvas
+        this.fontSize = 18;                     // default size for font
     }
 
     updateResize() {
@@ -58,35 +64,53 @@ class Speedometer {
     }
     
     updateBackDrop() {
+        // console.log("enter")
         this.context.strokeStyle = "rgba(23,25,44, 0.5)";
-        this.context.fillStyle = "rgba(23,25,44, 0.5)";
+        this.context.fillStyle = "rgba(0, 128, 255, 0.2)";
+        // this.context.fillStyle = "rgb(255, 255, 255)";
         
         this.context.beginPath();
         
-        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2-10,0,2*Math.PI,false);
+        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2,0,2*Math.PI,false);
         
         this.context.stroke();
         this.context.closePath();
         this.context.fill();
     }
 
+    getFont() {
+        var ratio = this.fontSize / this.fontBase;   // calc ratio
+        var size = this.canvas.width * ratio;   // get font size based on current width
+        return (size|0) + 'px sans-serif'; // set font
+    }
+
     updateTextGuage() {
-        this.context.font = "30px Arial";
+        //(fontSize|0) + 'px myFont';
+        // var fontSize = 
+        // this.context.font = (fontSize|0) + "px Arial";
+        this.context.font = this.getFont()
         this.context.textAlign = "center";
         this.context.fillStyle = "white"
 
         var percentage = this.textPercent
-        percentage = percentage.toString() + "%" 
-
+        percentage = percentage.toString() + "%"
         this.context.fillText(percentage, this.canvas.width/2, this.canvas.height/2-12.5);
 
-        var speed = this.textPercent * 2
-        speed = speed.toString() + " km/h"
+        var speedInt = this.currentPercent * 70
+        var speed = speedInt.toString().slice(0,4)
+        if (speedInt < 10.0) {
+            speed = "0" + speed
+        }
+        if (speed.length == 2) {
+            speed += ".0"
+        }
+        speed = speed.slice(0,4)
+        speed = speed + " km/h"
 
         this.context.fillText(speed, this.canvas.width/2, this.canvas.height/2+20);
     }
 
-    updateArc() {
+    updateArcPower() {
         var gradient = this.context.createLinearGradient((this.canvas.width)/2 - 80, 0, (this.canvas.width)/2 + 80, 0);
         gradient.addColorStop("0", "#017a09");
         gradient.addColorStop("0.5" ,"yellow");
@@ -101,11 +125,30 @@ class Speedometer {
         var startRadians = this.degreesToRadians(startDegrees);
         var finishRadians = this.degreesToRadians(finishDegrees);
         this.context.beginPath();
-        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2-20,startRadians,finishRadians,false);
+        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2-30,startRadians,finishRadians,false);
         this.context.stroke();
     }
 
-    updateArcTwo() {
+    updateArcSpeed() {
+        var gradient = this.context.createLinearGradient((this.canvas.width)/2 - 80, 0, (this.canvas.width)/2 + 80, 0);
+        gradient.addColorStop("0", "#017a09");
+        gradient.addColorStop("0.5" ,"yellow");
+        gradient.addColorStop("0.8" ,"yellow");
+        gradient.addColorStop("1.0", "red");
+        
+        this.context.strokeStyle = gradient; 
+        this.context.lineWidth = 4;
+        
+        var startDegrees = 150;
+        var finishDegrees = this.percentToDegrees(100);
+        var startRadians = this.degreesToRadians(startDegrees);
+        var finishRadians = this.degreesToRadians(finishDegrees);
+        this.context.beginPath();
+        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2-40,startRadians,finishRadians,false);
+        this.context.stroke();
+    }
+
+    updateArcPowerSheathPower() {
         //"rgb(58,161,199)"
         this.context.strokeStyle = "rgb(28,43,64)"; 
         this.context.lineWidth = 6;
@@ -124,18 +167,41 @@ class Speedometer {
         var startRadians = this.degreesToRadians(startDegrees);
         var finishRadians = this.degreesToRadians(finishDegrees);
         this.context.beginPath();
-        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2-20,startRadians,finishRadians,true);
+        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2-30,startRadians,finishRadians,true);
         this.context.stroke();
     }
 
-    updateArcThree() {
+    updateArcPowerSheathSpeed() {
+        //"rgb(58,161,199)"
+        this.context.strokeStyle = "rgb(28,43,64)"; 
+        this.context.lineWidth = 6;
+        
+        var startDegrees = 150;
+        var finishDegrees;
+        // if (this.currentPercent != 0) {
+            // startDegrees = this.percentToDegrees(this.currentPercent)-5;
+
+            finishDegrees = this.percentToDegrees(this.currentPercent);
+        // }
+        // else {
+        //     startDegrees = 0;
+        //     finishDegrees = 360;
+        // }
+        var startRadians = this.degreesToRadians(startDegrees);
+        var finishRadians = this.degreesToRadians(finishDegrees);
+        this.context.beginPath();
+        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2-40,startRadians,finishRadians,true);
+        this.context.stroke();
+    }
+
+    updateArcPowerThree() {
         if (this.arcThreePos > 360) {
             this.arcThreePos -= 360;
         }
 
         this.arcThreeIncrement = this.currentPercent * 10;
 
-        this.context.strokeStyle = "rgb(28,43,64)"; 
+        this.context.strokeStyle = "rgb(110, 154, 216)"; 
         this.context.lineWidth = 2;
         
         var startDegrees = this.arcThreePos-5;
@@ -144,13 +210,13 @@ class Speedometer {
         var finishRadians = this.degreesToRadians(finishDegrees);
         
         this.context.beginPath();
-        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2-10,startRadians,finishRadians,true);
+        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2-20,startRadians,finishRadians,true);
         this.context.stroke();
         
         this.arcThreePos += this.arcThreeIncrement;
     }
 
-    updateArcFour() {
+    updateArcPowerFour() {
         this.context.strokeStyle = "rgb(150,150,150)"; 
         this.context.lineWidth = 2;
         
@@ -168,7 +234,7 @@ class Speedometer {
 
         this.context.beginPath();
         this.context.setLineDash([5, 5]);
-        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2,startRadians,finishRadians,false);
+        this.context.arc(this.canvas.width/2,this.canvas.height/2,this.canvas.width/2-10,startRadians,finishRadians,false);
         this.context.stroke();
         this.context.setLineDash([]);
 
@@ -193,10 +259,12 @@ class Speedometer {
 
         
         this.updateBackDrop();
-        this.updateArc();
-        this.updateArcTwo();
-        this.updateArcThree();
-        this.updateArcFour();
+        this.updateArcSpeed();
+        this.updateArcPowerSheathSpeed();
+        this.updateArcPower();
+        this.updateArcPowerSheathPower();
+        this.updateArcPowerThree();
+        this.updateArcPowerFour();
         // this.updatePerpLine();
         this.updateTextGuage();
 
@@ -223,17 +291,17 @@ class Speedometer {
 let speedometer = new Speedometer(speedometerCanvasId, speedometerContainerId)
 speedometer.updatePercent(70);
 speedometer.updateSpeedGauge();
-// speedometer.updateArcThree();
+// speedometer.updateArcPowerThree();
 
 
-// var intervalFunction = speedometer.updateArcThree();
+// var intervalFunction = speedometer.updateArcPowerThree();
 
 function test() {
     speedometer.updateSpeedGauge();
 }
 
 setInterval(test, 50)
-// setInterval( _.bind( function(){speedometer.updateArcThree();}, this), 50);
+// setInterval( _.bind( function(){speedometer.updateArcPowerThree();}, this), 50);
 
 var temp = 0;
 function incSpeed() {

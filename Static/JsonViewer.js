@@ -18,6 +18,8 @@ async function updateJsonViewer() {
     }
 }
 
-url='http://104.230.28.139:5002/'+ApiType+'/api?dump=True';
+url=window.location+'/api?dump=True';
+
+console.log(url)
 
 updateJsonViewer();

@@ -54,7 +54,7 @@ class User(object):
 	def get_id(self):
 		return self.id
 
-app = Flask(__name__, template_folder='../Templates', static_folder='../Static')
+app = Flask(__name__, template_folder='../templates', static_folder='../Static')
 app.secret_key = b'_5#y2L"F4Qa8z\n\xec]/'
 
 login_manager = LoginManager()
@@ -112,6 +112,11 @@ def ccl():
 def test():
 	return flask.render_template("test.html")
 
+@app.route("/dashboard")
+@login_required
+def dashboard():
+	return flask.render_template("dashboard.html")
+
 @app.route("/")
 @app.route("/index")
 @login_required
@@ -148,7 +153,7 @@ class FlaskServer(object):
 		self.type = "FlaskServer"
 		self.active = True
 		app.debug = True
-		self.address = "192.168.0.6"
+		self.address = "0.0.0.0"
 		self.port = '5002'
 		self.log = False
 		self.useApiService = useApiService
