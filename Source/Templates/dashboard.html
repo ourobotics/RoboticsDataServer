@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+    <style>
+        body {
+            font-family: "Roboto", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin: 0;
+			overflow:hidden;      
+        }
+        #background {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			height: 100%;
+            z-index: -1;
+		}
+        #containerWholeScreen {
+			position: absolute;
+            height: 100%;
+            width: 100%;
+            /* background-color: rgba(0, 50, 200, 0.30); */
+        }
+        #containertopBar {
+            position: absolute;
+            height: 10%;
+            width: 100%;
+            background-color: rgba(0, 128, 255, 0.2);
+        }
+		#containerWholeScreen canvas, #overlay, .overlay {
+			position: absolute;
+            color: #ffffff;
+            font-size: 12px;
+		}
+
+        .controllerContainer {
+            position: absolute;
+            height: 25%;
+            width: 10%; 
+            /* background-color: rgba(0, 128, 255, 0.2); */
+            top: 12%;
+            right: 10%;
+        }
+
+        #speedometerContainer {
+            left: 30%;
+        }
+
+        #controllerTwo {
+            left: 41%;
+        }
+
+        #controllerThree {
+            left: 52%;
+        }
+
+        #controllerFour {
+            left: 63%;
+        }
+
+        .controllerCanvas {
+            /* background-color: rgba(25, 25, 45, .20); */
+        }
+        
+
+    </style>
+    <head>
+        <title>Robotics Interface</title>
+    </head>
+
+    <body>
+
+        <div id="containertopBar"></div>
+
+        <div id="containerWholeScreen">
+            <canvas id="background"></canvas>     
+        </div>
+
+
+        <div id="speedometerContainer" class="controllerContainer">
+            <canvas id="speedometerCanvas" class="controllerCanvas"></canvas>
+        </div>
+        <div id="controllerTwo" class="controllerContainer">
+            <canvas id="controllerBoxCanvasTwo" class="controllerBoxCanvas"></canvas>
+        </div>
+        <div id="controllerThree" class="controllerContainer">
+            <canvas id="controllerBoxCanvasThree" class="controllerBoxCanvas"></canvas>
+        </div>
+        <div id="controllerFour" class="controllerContainer">
+            <canvas id="controllerBoxCanvasFour" class="controllerBoxCanvas"></canvas>
+        </div>
+
+    </body>
+    
+    <script>
+        var canvasId = "background";
+
+        var speedometerCanvasId = "speedometerCanvas";
+        var speedometerContainerId = "#speedometerContainer";
+    </script>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="{{ url_for('static', filename='HexagonAsset.js') }}"></script>
+    <!-- <script src="../Static/HexagonAsset.js"></script> -->
+    <!-- <script src="../Static/DashboardSpeedometer.js"></script> -->
+    <script src="{{ url_for('static', filename='DashboardSpeedometer.js') }}"></script>
+
+</html>
