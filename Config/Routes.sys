@@ -1,9 +1,10 @@
 ./Config/
+../Config/
 ./Controllers/
 ./Cache/
-./Server/
-./Server/Routes
-./Services/
-./Tools/
+./Network/
+./Static/
+./System/
+./Templates/
 ./Test/
-./Test/TestLibrary/
+./Tools/

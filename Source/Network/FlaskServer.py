@@ -16,6 +16,7 @@
 from ApiService import ApiService
 # Controllers
 # Tools
+from ConfigLoader import ConfigLoader
 # Test
 # Data
 from DeviceData import DeviceData
@@ -149,14 +150,28 @@ def login():
 	return flask.render_template("login.html")
 
 class FlaskServer(object):
-	def __init__(self, useApiService = False):
+	def __init__(self, useApiService = False, useDebug = True, useLog = False):
 		self.type = "FlaskServer"
+		self.debug = useDebug
+
+		self.config = self.loadConfig(self.type)
+		
 		self.active = True
-		app.debug = True
-		self.address = ""
-		self.port = '5002'
-		self.log = False
+		self.address = self.config[self.checkDebug() + "Address"]
+		self.port = self.config[self.checkDebug() + "Port"]
+		self.log = useLog
 		self.useApiService = useApiService
+		print(self.address, self.port)
+
+	def loadConfig(self, configName):
+		configLoader = ConfigLoader()
+		config = configLoader.getConfig(configName)
+		return config
+
+	def checkDebug(self):
+		if (self.debug == True):
+			return "Debug"
+		return ""
 
 	def jsonify(self, message = "Null", time = -1, function = "Null"):
 		return {
@@ -169,6 +184,7 @@ class FlaskServer(object):
 				"Time": time 
 			},
 			"Specific Information": {
+				"Address": self.address,
 				"Port": self.port,
 				"Log": self.log
 			}
@@ -180,7 +196,7 @@ class FlaskServer(object):
 
 		login_manager.init_app(app)
 		login_manager.login_view = 'login'
-
+		app.debug = self.debug
 		app.run(host=self.address,port=self.port, use_evalex=self.log)
 		
 # |===============================================================|

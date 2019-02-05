@@ -1,6 +1,6 @@
 # |===============================================================|
 # ||
-# ||  Program/File:		PropertyLoaderTool.py
+# ||  Program/File:		ConfigLoader.py
 # ||
 # ||  Description:		
 # ||
@@ -14,7 +14,7 @@
 # Controllers
 
 # Tools
-from LoggingTool import LoggingTool
+# from LoggingTool import LoggingTool
 # Test
 
 # Premades
@@ -28,18 +28,18 @@ import traceback
 
 # ||=======================||
 # |============================================================================|
-class PropertyLoaderTool(object):
+class ConfigLoader(object):
 
 	def __init__(self):
-		self.LoggingTool = LoggingTool()
+		return
 
-	def getProperties(self, filename):
-		if (filename.find('.prop')) == -1:
-			filename = filename + '.prop'
+	def getConfig(self, filename):
+		if (filename.find('.conf')) == -1:
+			filename = filename + '.conf'
 		try:
-			properties = dict(line.strip().split('=') for line in open('./Config/' + filename))   
-			return properties   
+			config = dict(line.strip().split('=') for line in open('../Config/' + filename))   
+			return config   
 		except Exception as e:
-			self.LoggingTool.printLog(str(traceback.format_exc()))
+			return {"Error": e}
 
 # ||============================================================================||

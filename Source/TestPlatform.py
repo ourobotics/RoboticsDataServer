@@ -1,6 +1,6 @@
 # ||==============================================================||
 # ||
-# ||  Program/File:     RoboticsDataServer.py
+# ||  Program/File:     TestPlatform.py
 # ||
 # ||  Description:		
 # ||
@@ -17,6 +17,7 @@ from NetworkServer import NetworkServer
 from FlaskServer import FlaskServer
 # Controllers
 # Tools
+from ConfigLoader import ConfigLoader
 # Test
 # Data
 from DeviceData import DeviceData
@@ -48,38 +49,9 @@ class RoboticsDataServer(object):
 
 	def main(self):
 		# ||=======================||
-		# Program Setup
-		if self.useNetworkServer:
-			self.networkServer.buildListener()
-			self.networkServerThread = Thread(target = self.networkServer.networkServerThread)
-			self.networkServerThread.setDaemon(True)
-			self.networkServerThread.start()
-		if self.useFlaskServer:
-			self.flaskServerThread = Thread(target = self.flaskServer.FlaskServerThread)
-			self.flaskServerThread.setDaemon(True)
-			self.flaskServerThread.start()
-			
-		sleep(1)
-		try:
-			while True:
-				# continue
-				sleep(1)
-				# data = DeviceData.getLiveDeviceData()
-				
-				networkServerData = self.networkServer.jsonify(
-					"Requesting Current Cache", 
-					str(strftime("%Y-%m-%d %H:%M:%S", localtime())))
-				connectionControllerData = self.networkServer.connectionController.jsonify(
-					"Requesting Current Cache", 
-					str(strftime("%Y-%m-%d %H:%M:%S", localtime())))
-
-				DeviceData.NetworkServer.setLiveData(networkServerData)
-				DeviceData.ConnectionController.setLiveData(connectionControllerData)
-				# DeviceData.setLiveDeviceData(data)
-
-		except KeyboardInterrupt as e:
-			# print(str(traceback.format_exc()))
-			return
+		configLoader = ConfigLoader()
+		config = configLoader.getConfig("FlaskServer")
+		print(config["Address"])
 
 rds = RoboticsDataServer()
 rds.main()
