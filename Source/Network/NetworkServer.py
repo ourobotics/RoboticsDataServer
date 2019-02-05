@@ -14,6 +14,7 @@
 # Controllers
 from ConnectionController import ConnectionController
 # Tools
+from ConfigLoader import ConfigLoader
 # Test
 # Data
 from DeviceData import DeviceData
@@ -22,7 +23,7 @@ from time import sleep, time, strftime, localtime
 import socket
 import traceback
 from threading import Thread
-from ast import literal_eval
+import ast
 # ||=======================||
 # Global Variables
 
@@ -34,10 +35,24 @@ from ast import literal_eval
 
 class NetworkServer(object):
 	def __init__(self):
-		self.active = False
 		self.type = "NetworkServer"
-		self.host = ""
-		self.port = 1024
+
+		self.config = self.loadConfig(self.type)
+
+		self.active = False
+		
+		# ||=======================||
+		# Config <bool>
+		self.debug = ast.literal_eval(self.config["Debug"])
+		self.log = ast.literal_eval(self.config["Log"])
+
+		# ||=======================||
+		# Config <string>
+		self.address = self.config[self.checkDebug() + "Address"]
+		self.port = int(self.config[self.checkDebug() + "Port"])
+
+		# ||=======================||
+		# Defaults
 		self.duty = "Inactive"
 		self.connectionStatus = False
 		self.connectionController = ConnectionController() 
@@ -46,6 +61,16 @@ class NetworkServer(object):
 		# ||=======================||
 		socket.setdefaulttimeout(self.socketTimeout)
 		self.listener = socket.socket()
+
+	def loadConfig(self, configName):
+		configLoader = ConfigLoader()
+		config = configLoader.getConfig(configName)
+		return config
+
+	def checkDebug(self):
+		if (self.debug == True):
+			return "Debug"
+		return ""
 
 	def jsonify(self, message = "Null", time = -1, function = "jsonify"):
 		return {
@@ -59,11 +84,13 @@ class NetworkServer(object):
 				"Time": time
 			},
 			"Specific Information": {
-				"Host": self.host,
+				"Address": self.address,
 				"Port": self.port,
 				"Connection Status": self.connectionStatus,
-				"Address": str(self.addr[0]) + ', ' + str(self.addr[1]),
-				"Timeout": self.socketTimeout
+				"Connected Address": str(self.addr[0]) + ', ' + str(self.addr[1]),
+				"Timeout": self.socketTimeout,
+				"Debug": self.debug,
+				"Log": self.log
 			}
 		}
 
@@ -86,16 +113,15 @@ class NetworkServer(object):
 
 		while True:
 			try:
-				self.listener.bind((self.host, self.port))
-				print(self.host,self.port)
+				self.listener.bind((self.address, self.port))
 				break
 			except Exception as e:
 				# str(traceback.format_exc())
 				self.port += 1
 
-		message = "Server Created @: " + str(self.host) + ", Port: " + str(self.port)
+		message = "Server Created @: " + str(self.address) + ", Port: " + str(self.port)
 
-		self.updateCurrentDutyLog("Server Created @: " + str(self.host) + ", Port: " + str(self.port), "buildListener")
+		self.updateCurrentDutyLog("Server Created @: " + str(self.address) + ", Port: " + str(self.port), "buildListener")
 		return 0
 
 	def beginListenProtocal(self):
@@ -106,7 +132,7 @@ class NetworkServer(object):
 		listenProtocalThread.setDaemon(True)
 		listenProtocalThread.start()
 		
-		self.updateCurrentDutyLog("Server Listening @: " + str(self.host) + ", Port: " + str(self.port), "buildListener")
+		self.updateCurrentDutyLog("Server Listening @: " + str(self.address) + ", Port: " + str(self.port), "buildListener")
 		return 0
 
 	def networkServerThread(self):

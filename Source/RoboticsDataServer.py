@@ -24,6 +24,7 @@ from DeviceData import DeviceData
 from threading import Thread
 from time import sleep, time, strftime, localtime
 import traceback
+import json
 # ||=======================||
 # Global Variables
 
@@ -39,12 +40,18 @@ class RoboticsDataServer(object):
 		# Program Config Varaibles
 		self.useNetworkServer = True
 		self.useFlaskServer = True
-		self.useApiService = True
 
 		# ||=======================||
 		# Program Classes
 		self.networkServer = NetworkServer()
-		self.flaskServer = FlaskServer(self.useApiService)
+		self.flaskServer = FlaskServer()
+
+		# ||=======================||
+		# Display Program Classes Configs
+		print("Display Program Classes Configs:")
+		print("Flask Server Configuration:",(self.flaskServer.jsonify("Printing Configuration")["Specific Information"]))
+		print("Network Server Configuration:",(self.networkServer.jsonify("Printing Configuration")["Specific Information"]))
+		print()
 
 	def main(self):
 		# ||=======================||

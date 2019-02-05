@@ -21,6 +21,7 @@ from ConfigLoader import ConfigLoader
 # Data
 from DeviceData import DeviceData
 # Premades
+import ast
 from flask import Flask, request, Response, redirect, url_for
 import flask
 from flask_restful import Resource
@@ -150,18 +151,23 @@ def login():
 	return flask.render_template("login.html")
 
 class FlaskServer(object):
-	def __init__(self, useApiService = False, useDebug = True, useLog = False):
+	def __init__(self, useApiService = False, useDebug = False, useLog = False):
 		self.type = "FlaskServer"
-		self.debug = useDebug
 
 		self.config = self.loadConfig(self.type)
+
+		self.active = False
 		
-		self.active = True
+		# ||=======================||
+		# Config <bool>
+		self.debug = ast.literal_eval(self.config["Debug"])
+		self.log = ast.literal_eval(self.config["Log"])
+		self.useApiService = ast.literal_eval(self.config["ApiService"])
+
+		# ||=======================||
+		# Config <string>
 		self.address = self.config[self.checkDebug() + "Address"]
 		self.port = self.config[self.checkDebug() + "Port"]
-		self.log = useLog
-		self.useApiService = useApiService
-		print(self.address, self.port)
 
 	def loadConfig(self, configName):
 		configLoader = ConfigLoader()
@@ -186,7 +192,9 @@ class FlaskServer(object):
 			"Specific Information": {
 				"Address": self.address,
 				"Port": self.port,
-				"Log": self.log
+				"Log": self.log,
+				"Debug": self.debug,
+				"ApiService": self.useApiService
 			}
 		}
 
@@ -197,6 +205,8 @@ class FlaskServer(object):
 		login_manager.init_app(app)
 		login_manager.login_view = 'login'
 		app.debug = self.debug
+		self.active = True
 		app.run(host=self.address,port=self.port, use_evalex=self.log)
-		
+		self.active = False
+
 # |===============================================================|
