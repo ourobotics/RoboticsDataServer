@@ -59,25 +59,81 @@ class NetworkServer(object):
 		self.connectionController = ConnectionController() 
 		self.socketTimeout = 1
 		self.addr = (None, None)
+		socket.setdefaulttimeout(self.socketTimeout)
+		self.listener = socket.socket()
 
 		self.debugLogger = DebugLogger(self.type)
 		self.debugLogger.setMessageSettings(
 			ast.literal_eval(self.config["Standard"]),
 			ast.literal_eval(self.config["Warning"]),
 			ast.literal_eval(self.config["Error"]))
-		# ||=======================||
-		socket.setdefaulttimeout(self.socketTimeout)
-		self.listener = socket.socket()
+
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
 
 	def loadConfig(self, configName):
 		configLoader = ConfigLoader()
 		config = configLoader.getConfig(configName)
 		return config
 
+	# |============================================================================|
+
 	def checkDebug(self):
 		if (self.debug == True):
 			return "Debug"
 		return ""
+
+	# |============================================================================|
+
+	def updateCurrentDutyLog(self, duty, function = "updateCurrentDutyLog"):
+		self.duty = duty
+		DeviceData.NetworkServer.pushInternalLog(self.jsonify(
+			"Duty Update: " + self.duty,
+			str(strftime("%a;%d-%m-%Y;%H:%M:%S", localtime())),
+			function)
+		)
+		return 0
+
+	# |============================================================================|
+
+	def updateCurrentDuty(self, duty):
+		self.duty = duty
+		return 0
+
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
 
 	def jsonify(self, message = "Null", time = strftime("%a;%d-%m-%Y;%H:%M:%S", localtime()), function = "Null"):
 		return {
@@ -101,29 +157,21 @@ class NetworkServer(object):
 			}
 		}
 
-	def updateCurrentDutyLog(self, duty, function = "updateCurrentDutyLog"):
-		self.duty = duty
-		DeviceData.NetworkServer.pushInternalLog(self.jsonify(
-			"Duty Update: " + self.duty,
-			str(strftime("%a;%d-%m-%Y;%H:%M:%S", localtime())),
-			function)
-		)
-
-	def updateCurrentDuty(self, duty):
-		self.duty = duty
-		return 0
+	# |============================================================================|
 
 	def buildListener(self):
 		# ||=======================||
-		WATCH = time()
-		self.updateCurrentDutyLog("Building Listener")
+		self.updateCurrentDutyLog("Building Listener" , "buildListener")
 
 		while True:
 			try:
 				self.listener.bind((self.address, self.port))
 				break
 			except Exception as e:
-				# str(traceback.format_exc())
+			# ||=======================||
+				logMessage = "Failure To Listen At Port " + str(self.port) + ": " + str(e) + " buildListener"
+				self.debugLogger.log("Warning", logMessage)
+				# ||=======================||
 				self.port += 1
 
 		message = "Server Created @: " + str(self.address) + ", Port: " + str(self.port)
@@ -131,10 +179,10 @@ class NetworkServer(object):
 		self.updateCurrentDutyLog("Server Created @: " + str(self.address) + ", Port: " + str(self.port), "buildListener")
 		return 0
 
+	# |============================================================================|
+
 	def beginListenProtocal(self):
 		self.updateCurrentDutyLog("Starting listenProtocalThread", "beginListenProtocal")
-		# self.listener.listen(500)
-		# self.active = True
 		listenProtocalThread = Thread(target = self.listenProtocal)
 		listenProtocalThread.setDaemon(True)
 		listenProtocalThread.start()
@@ -142,41 +190,49 @@ class NetworkServer(object):
 		self.updateCurrentDutyLog("Server Listening @: " + str(self.address) + ", Port: " + str(self.port), "buildListener")
 		return 0
 
+	# |============================================================================|
+
 	def networkServerThread(self):
 		self.updateCurrentDutyLog("networkServerThread Created")
 
 		self.active = True
 		self.listener.listen(500)
 
-		self.updateCurrentDutyLog("Listening")
+		self.updateCurrentDutyLog("Server Listening @: " + str(self.address) + ", Port: " + str(self.port), "networkServerThread")
 		while self.active:
-			self.updateCurrentDuty("Listening")
+			self.updateCurrentDuty("Server Listening @: " + str(self.address) + ", Port: " + str(self.port))
 			if (self.connectionStatus == False):
 				try:
 					conn, self.addr = self.listener.accept()
 
 					# ||=======================||
-					logMessage = "Connection Created: Address: ",self.addr[0] + " Port: " + self.addr[1]
-					self.updateCurrentDutyLog(logMessage)
+					logMessage = "Connection Created: Address: ", str(self.addr[0]) + " Port: " + str(self.addr[1])
 					self.debugLogger.log("Standard", logMessage)
 					# ||=======================||
 
 					self.connectionStatus = True
 					self.connectionController.setConnection(conn, self.addr)
-					self.updateCurrentDutyLog("ConnectionController Active")
+					self.updateCurrentDutyLog("ConnectionController Active", "networkServerThread")
 					self.connectionController.connectionCycle()
 					self.connectionStatus = False
 					conn.close()
-					self.updateCurrentDutyLog("ConnectionController Closed")
+					self.updateCurrentDutyLog("ConnectionController Closed", "networkServerThread")
 				except socket.timeout as e:
-					continue
-				except Exception as e:
 					# ||=======================||
-					logMessage = "Failure In Accepting/Maintaining Connection(s):" + e + " networkServerThread"
-					self.updateCurrentDutyLog(logMessage)
+					# logMessage = "Failure Socket Timed Out:" + str(e) + " networkServerThread"
+					# self.debugLogger.log("Warning", logMessage)
+					continue
+					# ||=======================||
+				except Exception as e:
+					conn.close()
+					self.active = False
+					# ||=======================||
+					logMessage = "Failure In Accepting/Maintaining Connection(s): " + str(e) + " networkServerThread"
 					self.debugLogger.log("Error", logMessage)
 					# ||=======================||
 					return 0
+
+	# |============================================================================|
 
 	def closeServer(self):
 		WATCH = time()
@@ -185,8 +241,7 @@ class NetworkServer(object):
 		self.listener.close()
 		self.updateCurrentDutyLog("Server Closed", "closeServer")
 		# ||=======================||
-		logMessage = "Connection Created: Address: ",self.addr[0] + " Port: " + self.addr[1]
-		self.updateCurrentDutyLog(logMessage)
+		logMessage = "Server Closed"
 		self.debugLogger.log("Standard", logMessage)
 		# ||=======================||
 		return 0

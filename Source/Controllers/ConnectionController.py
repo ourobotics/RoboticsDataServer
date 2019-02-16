@@ -13,6 +13,8 @@
 # Routes
 # Controllers
 # Tools
+from ConfigLoader import ConfigLoader
+from DebugLogger import DebugLogger
 # Test
 # Cache
 from DeviceData import DeviceData
@@ -24,6 +26,7 @@ import traceback
 import socket
 from ast import literal_eval
 import pickle
+import ast
 # ||=======================||
 # Global Variables
 
@@ -36,9 +39,98 @@ import pickle
 class ConnectionController(object):
 	def __init__(self, conn = None, addr = (None, None)):
 		self.type = "ConnectionController"
+
+		self.config = self.loadConfig(self.type)
+		
 		self.active = True
+		
+		# ||=======================||
+		# Config <bool>
+		self.debug = ast.literal_eval(self.config["Debug"])
+		self.log = ast.literal_eval(self.config["Log"])
+
+		# ||=======================||
+		# Config <string>
 		self.connection = conn
 		self.address = addr
+
+		# ||=======================||
+		# Defaults
+		self.duty = "Inactive"
+		self.connectionStatus = False
+
+		self.debugLogger = DebugLogger(self.type)
+		self.debugLogger.setMessageSettings(
+			ast.literal_eval(self.config["Standard"]),
+			ast.literal_eval(self.config["Warning"]),
+			ast.literal_eval(self.config["Error"]))
+
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+
+	def loadConfig(self, configName):
+		configLoader = ConfigLoader()
+		config = configLoader.getConfig(configName)
+		return config
+
+	# |============================================================================|
+
+	def checkDebug(self):
+		if (self.debug == True):
+			return "Debug"
+		return ""
+
+	# |============================================================================|
+
+	def updateCurrentDutyLog(self, duty, function = "updateCurrentDutyLog"):
+		self.duty = duty
+		DeviceData.ConnectionController.pushInternalLog(self.jsonify(
+			"Duty Update: " + self.duty,
+			str(strftime("%a;%d-%m-%Y;%H:%M:%S", localtime())),
+			function)
+		)
+		return 0
+
+	# |============================================================================|
+
+	def updateCurrentDuty(self, duty):
+		self.duty = duty
+		return 0
+
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
+	# |============================================================================|
 
 	def jsonify(self, message = "Null", time = strftime("%a;%d-%m-%Y;%H:%M:%S", localtime()), function = "Null"):
 		return {
@@ -55,18 +147,7 @@ class ConnectionController(object):
 			}
 		}
 
-	def updateCurrentDutyLog(self, duty, function = "updateCurrentDutyLog"):
-		self.duty = duty
-		DeviceData.ConnectionController.pushInternalLog(self.jsonify(
-			"Duty Update: " + self.duty,
-			str(strftime("%a;%d-%m-%Y;%H:%M:%S", localtime())),
-			function)
-		)
-		return 0
-
-	def updateCurrentDuty(self, duty):
-		self.duty = duty
-		return 0
+	# |============================================================================|
 
 	def createInteractionLog(self, data):
 		return self.jsonify(
@@ -75,12 +156,14 @@ class ConnectionController(object):
 			"createInteractionLog"
 		)
 
+	# |============================================================================|
+
 	def setConnection(self, conn, addr):
-		self.updateCurrentDutyLog("Connection being set", "setConnection")
 		self.connection = conn
 		self.address = addr
 		return 0
 
+	# |============================================================================|
 
 	def connectionCycle(self):
 		self.updateCurrentDutyLog("Starting Connection Cycle", "connectionCycle")
@@ -88,10 +171,17 @@ class ConnectionController(object):
 		if (self.connection == None or self.address == None):
 			self.active = False
 			self.updateCurrentDutyLog("Invalid Connection Or Address", "connectionCycle")
+			# ||=======================||
+			logMessage = "Invalid Connection Or Address" + " connectionCycle"
+			self.debugLogger.log("Error", logMessage)
+			# print("h1")
+			# ||=======================||
 			return 0
-		
+		# print("h2")
+		# str(self.address[0]) + ', ' + str(self.address[1])
 		while self.active:
-			self.updateCurrentDuty("Listening")
+			# print("h3")
+			self.updateCurrentDuty("Server Listening @: " + str(self.address[0]) + ', ' + str(self.address[1]))
 			dataRecv = None
 			try:
 				dataRecv = self.connection.recv(1024).decode()
@@ -205,6 +295,6 @@ class ConnectionController(object):
 
 				dataRecv = None
 
-		return
+		return 0
 
 # |===============================================================|
