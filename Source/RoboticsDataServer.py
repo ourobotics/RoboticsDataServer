@@ -75,10 +75,10 @@ class RoboticsDataServer(object):
 				
 				networkServerData = self.networkServer.jsonify(
 					"Requesting Current Cache", 
-					str(strftime("%Y-%m-%d %H:%M:%S", localtime())))
+					str(strftime("%a;%d-%m-%Y;%H:%M:%S", localtime())
 				connectionControllerData = self.networkServer.connectionController.jsonify(
 					"Requesting Current Cache", 
-					str(strftime("%Y-%m-%d %H:%M:%S", localtime())))
+					str(strftime("%a;%d-%m-%Y;%H:%M:%S", localtime())
 
 				DeviceData.NetworkServer.setLiveData(networkServerData)
 				DeviceData.ConnectionController.setLiveData(connectionControllerData)

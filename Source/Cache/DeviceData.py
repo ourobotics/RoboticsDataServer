@@ -54,7 +54,6 @@ class DeviceData:
 
         @classmethod
         def getInteractionLog(cls, i):
-            # print(i)
             if (i == None):
                 return cls.ConnectionController["InteractionLog"]
             else:
@@ -68,7 +67,6 @@ class DeviceData:
 
         @classmethod
         def getInternalLog(cls, i):
-            # print(i)
             if (i == None):
                 return cls.ConnectionController["InternalLog"]
             else:

@@ -17,6 +17,7 @@ from NetworkServer import NetworkServer
 from FlaskServer import FlaskServer
 # Controllers
 # Tools
+from DebugLogger import DebugLogger
 from ConfigLoader import ConfigLoader
 # Test
 # Data
@@ -25,6 +26,7 @@ from DeviceData import DeviceData
 from threading import Thread
 from time import sleep, time, strftime, localtime
 import traceback
+import sys
 # ||=======================||
 # Global Variables
 
@@ -52,6 +54,16 @@ class RoboticsDataServer(object):
 		configLoader = ConfigLoader()
 		config = configLoader.getConfig("FlaskServer")
 		print(config["Address"])
+		print(self.networkServer.jsonify())
+		print(sys.getsizeof(self.networkServer.jsonify()))
+
+		self.debugLogger = DebugLogger("Main")
+		self.debugLogger.setMessageSettings(True, True, True)
+		for i in range(650):
+			# print(i)
+			self.debugLogger.log("Warning", "Hello World "+str(i))
+		# self.debugLogger.dumpMessageBuffer()
+
 
 rds = RoboticsDataServer()
 rds.main()

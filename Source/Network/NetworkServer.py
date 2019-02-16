@@ -15,6 +15,7 @@
 from ConnectionController import ConnectionController
 # Tools
 from ConfigLoader import ConfigLoader
+from DebugLogger import DebugLogger
 # Test
 # Data
 from DeviceData import DeviceData
@@ -58,6 +59,12 @@ class NetworkServer(object):
 		self.connectionController = ConnectionController() 
 		self.socketTimeout = 1
 		self.addr = (None, None)
+
+		self.debugLogger = DebugLogger(self.type)
+		self.debugLogger.setMessageSettings(
+			ast.literal_eval(self.config["Standard"]),
+			ast.literal_eval(self.config["Warning"]),
+			ast.literal_eval(self.config["Error"]))
 		# ||=======================||
 		socket.setdefaulttimeout(self.socketTimeout)
 		self.listener = socket.socket()
@@ -72,7 +79,7 @@ class NetworkServer(object):
 			return "Debug"
 		return ""
 
-	def jsonify(self, message = "Null", time = -1, function = "jsonify"):
+	def jsonify(self, message = "Null", time = strftime("%a;%d-%m-%Y;%H:%M:%S", localtime()), function = "Null"):
 		return {
 			"Generic Information": {
 				"_Class": self.type,
@@ -98,7 +105,7 @@ class NetworkServer(object):
 		self.duty = duty
 		DeviceData.NetworkServer.pushInternalLog(self.jsonify(
 			"Duty Update: " + self.duty,
-			str(strftime("%Y-%m-%d %H:%M:%S", localtime())),
+			str(strftime("%a;%d-%m-%Y;%H:%M:%S", localtime())),
 			function)
 		)
 
@@ -147,7 +154,13 @@ class NetworkServer(object):
 			if (self.connectionStatus == False):
 				try:
 					conn, self.addr = self.listener.accept()
-					print("Connection Created:","Address:",self.addr[0],"Port:",self.addr[1])
+
+					# ||=======================||
+					logMessage = "Connection Created: Address: ",self.addr[0] + " Port: " + self.addr[1]
+					self.updateCurrentDutyLog(logMessage)
+					self.debugLogger.log("Standard", logMessage)
+					# ||=======================||
+
 					self.connectionStatus = True
 					self.connectionController.setConnection(conn, self.addr)
 					self.updateCurrentDutyLog("ConnectionController Active")
@@ -158,7 +171,11 @@ class NetworkServer(object):
 				except socket.timeout as e:
 					continue
 				except Exception as e:
-					self.updateCurrentDutyLog("Failure In Accepting/Maintaining Connection(s):" + e, "networkServerThread")
+					# ||=======================||
+					logMessage = "Failure In Accepting/Maintaining Connection(s):" + e + " networkServerThread"
+					self.updateCurrentDutyLog(logMessage)
+					self.debugLogger.log("Error", logMessage)
+					# ||=======================||
 					return 0
 
 	def closeServer(self):
@@ -167,6 +184,11 @@ class NetworkServer(object):
 		sleep(0.1)
 		self.listener.close()
 		self.updateCurrentDutyLog("Server Closed", "closeServer")
+		# ||=======================||
+		logMessage = "Connection Created: Address: ",self.addr[0] + " Port: " + self.addr[1]
+		self.updateCurrentDutyLog(logMessage)
+		self.debugLogger.log("Standard", logMessage)
+		# ||=======================||
 		return 0
 		
 # |===============================================================|

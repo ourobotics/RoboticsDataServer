@@ -40,7 +40,7 @@ class ConnectionController(object):
 		self.connection = conn
 		self.address = addr
 
-	def jsonify(self, message = "Null", time = -1, function = "jsonify"):
+	def jsonify(self, message = "Null", time = strftime("%a;%d-%m-%Y;%H:%M:%S", localtime()), function = "Null"):
 		return {
 			"Generic Information": {
 				"_Class": self.type,
@@ -59,7 +59,7 @@ class ConnectionController(object):
 		self.duty = duty
 		DeviceData.ConnectionController.pushInternalLog(self.jsonify(
 			"Duty Update: " + self.duty,
-			str(strftime("%Y-%m-%d %H:%M:%S", localtime())),
+			str(strftime("%a;%d-%m-%Y;%H:%M:%S", localtime())),
 			function)
 		)
 		return 0
@@ -71,7 +71,7 @@ class ConnectionController(object):
 	def createInteractionLog(self, data):
 		return self.jsonify(
 			str(data[1]),
-			str(strftime("%Y-%m-%d %H:%M:%S", localtime())),
+			str(strftime("%a;%d-%m-%Y;%H:%M:%S", localtime())),
 			"createInteractionLog"
 		)
 

@@ -21,6 +21,7 @@ from ConfigLoader import ConfigLoader
 # Data
 from DeviceData import DeviceData
 # Premades
+from time import strftime, localtime
 import ast
 from flask import Flask, request, Response, redirect, url_for
 import flask
@@ -63,7 +64,6 @@ login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user(user_id):
-	# print(user_id)
 	try:
 		return UserList[user_id]
 	except:
@@ -134,19 +134,16 @@ def login():
 		if ((request.form['username'] != 'admin') or (request.form['password'] != 'admin')):
 			username = request.form['username']
 			password = request.form['password']
-			# print(username, password)
 			error = 'Invalid Credentials. Please try again.'
 		else:
 			username = request.form['username']
 			password = request.form['password']
-			# print(username, password)
 			user = User(hash(username), username)
 			UserList[hash(username)] = user
 			login_user(user)
 
 			flask.flash('Logged in successfully.')
 
-			# print("Success")
 			return redirect(url_for('index'))
 	return flask.render_template("login.html")
 
@@ -179,7 +176,7 @@ class FlaskServer(object):
 			return "Debug"
 		return ""
 
-	def jsonify(self, message = "Null", time = -1, function = "Null"):
+	def jsonify(self, message = "Null", time = strftime("%a;%d-%m-%Y;%H:%M:%S", localtime()), function = "Null"):
 		return {
 			"Generic Information": {
 				"_Class": self.type,

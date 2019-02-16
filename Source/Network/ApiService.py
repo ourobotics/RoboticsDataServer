@@ -20,6 +20,7 @@
 from DeviceData import DeviceData
 from EngineData import EngineData
 # Premades
+from time import strftime, localtime
 from flask import Flask, request, Response
 import flask
 from flask_restful import Resource, Api
@@ -125,7 +126,6 @@ class NetworkServerInternalLogAPI(Resource):
 	def get(self):
 		dumpTag = request.args.get('dump')
 		index = request.args.get('index')
-		# print(index)
 		rawData = DeviceData.NetworkServer.getInternalLog(index)
 		Data = str(rawData)
 		Data = Data.replace("'", '"')
@@ -143,7 +143,6 @@ class NetworkServerInternalLogAPI(Resource):
 		resp = Response(obj)
 		resp.headers['Access-Control-Allow-Origin'] = '*'
 		if (dumpTag == "True"):
-			print(obj)
 			jsonObj = loads(obj)
 			resp = dumps(jsonObj, indent = 4)
 			resp = resp.replace("\n", "<br>").replace("\\","")
@@ -176,7 +175,6 @@ class ConnectionControllerInteractionLogAPI(Resource):
 	def get(self):
 		dumpTag = request.args.get('dump')
 		index = request.args.get('index')
-		# print(index)
 		rawData = DeviceData.ConnectionController.getInteractionLog(index)
 		Data = str(rawData)
 		Data = Data.replace("'", '"')
@@ -194,7 +192,6 @@ class ConnectionControllerInteractionLogAPI(Resource):
 		resp = Response(obj)
 		resp.headers['Access-Control-Allow-Origin'] = '*'
 		if (dumpTag == "True"):
-			# print(obj)
 			jsonObj = loads(obj)
 			resp = dumps(jsonObj, indent = 4)
 			resp = resp.replace("\n", "<br>").replace("\\","")
@@ -207,7 +204,6 @@ class ConnectionControllerInternalLogAPI(Resource):
 	def get(self):
 		dumpTag = request.args.get('dump')
 		index = request.args.get('index')
-		# print(index)
 		rawData = DeviceData.ConnectionController.getInternalLog(index)
 		Data = str(rawData)
 		Data = Data.replace("'", '"')
@@ -256,7 +252,7 @@ class ApiService(object):
 		# Connection Controller Internal Log Api
 		self.api.add_resource(ConnectionControllerInternalLogAPI, '/ccl/api')
 
-	def jsonify(self, message = "Null", time = -1, function = "Null"):
+	def jsonify(self, message = "Null", time = strftime("%a;%d-%m-%Y;%H:%M:%S", localtime()), function = "Null"):
 		return {
 			"Generic Information": {
 				"_Class": self.type,
