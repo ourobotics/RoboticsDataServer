@@ -70,9 +70,10 @@ class DebugLogger(object):
 			self.dumpMessageBuffer()
 
 	def log(self, messageType, message, forcePrint = 0):
+		message = str(message)
 		printBool = self.messageSettings[messageType]
 		self.addMessageBuffer(message)
 		if (printBool or forcePrint):
-			print(messageType+':', message)
+			print(strftime("%d-%m-%Y | %H:%M:%S", localtime()) + " | " + messageType + ' | ' + message)
 
 # ||============================================================================||
