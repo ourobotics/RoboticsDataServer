@@ -61,6 +61,7 @@ class ConnectionController(object):
 
 		self.debugLogger = DebugLogger(self.type)
 		self.debugLogger.setMessageSettings(
+			ast.literal_eval(self.config["Debug"]),
 			ast.literal_eval(self.config["Standard"]),
 			ast.literal_eval(self.config["Warning"]),
 			ast.literal_eval(self.config["Error"]))

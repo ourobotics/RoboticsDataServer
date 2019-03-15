@@ -64,6 +64,7 @@ class NetworkServer(object):
 
 		self.debugLogger = DebugLogger(self.type)
 		self.debugLogger.setMessageSettings(
+			ast.literal_eval(self.config["Debug"]),
 			ast.literal_eval(self.config["Standard"]),
 			ast.literal_eval(self.config["Warning"]),
 			ast.literal_eval(self.config["Error"]))
@@ -206,7 +207,7 @@ class NetworkServer(object):
 					conn, self.addr = self.listener.accept()
 
 					# ||=======================||
-					logMessage = "Connection Created: Address: ", str(self.addr[0]) + " Port: " + str(self.addr[1])
+					logMessage = "Connection Created: Address: " + str(self.addr[0]) + " Port: " + str(self.addr[1])
 					self.debugLogger.log("Standard", logMessage)
 					# ||=======================||
 
@@ -223,14 +224,14 @@ class NetworkServer(object):
 					# self.debugLogger.log("Warning", logMessage)
 					continue
 					# ||=======================||
-				except Exception as e:
-					conn.close()
-					self.active = False
-					# ||=======================||
-					logMessage = "Failure In Accepting/Maintaining Connection(s): " + str(e) + " networkServerThread"
-					self.debugLogger.log("Error", logMessage)
-					# ||=======================||
-					return 0
+				# except Exception as e:
+				# 	conn.close()
+				# 	self.active = False
+				# 	# ||=======================||
+				# 	logMessage = "Failure In Accepting/Maintaining Connection(s): " + str(e) + " networkServerThread"
+				# 	self.debugLogger.log("Error", logMessage)
+				# 	# ||=======================||
+				# 	return 0
 
 	# |============================================================================|
 
