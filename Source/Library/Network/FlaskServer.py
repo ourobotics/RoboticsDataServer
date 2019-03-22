@@ -204,7 +204,7 @@ class FlaskServer(object):
 		app.debug = self.debug
 		self.active = True
 		print(self.address, self.port, self.log)
-		app.run(host=self.address,port=self.port, use_evalex=self.log)
+		app.run(host=self.address,port=int(self.port), use_evalex=self.log)
 		# self.active = False
 
 # |===============================================================|
