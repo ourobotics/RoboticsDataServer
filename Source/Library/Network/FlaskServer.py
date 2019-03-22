@@ -203,7 +203,7 @@ class FlaskServer(object):
 		login_manager.login_view = 'login'
 		app.debug = self.debug
 		self.active = True
-		print(self.address, self.port)
+		print(self.address, self.port, self.log)
 		app.run(host=self.address,port=self.port, use_evalex=self.log)
 		# self.active = False
 

@@ -11,7 +11,7 @@
 # ||===============================================================||
 # ||=======================||
 # Routes
-from System.Routes import Routes
+from Library.RouteExtension import RouteExtension
 # Server
 from NetworkServer import NetworkServer
 from FlaskServer import FlaskServer
